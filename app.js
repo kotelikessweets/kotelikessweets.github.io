@@ -23,9 +23,9 @@ async function initApp() {
 
   messaging = firebase.messaging();
 
-
-  setupMessaging();
   setupUI();
+  setupMessaging();
+
 }
 
 initApp();
@@ -45,7 +45,9 @@ if (
     getToken();
   }
 
+  if (bt_register && bt_register.length) {
   bt_register.on('click', getToken);
+}
 
   bt_delete.on('click', async function () {
     try {
@@ -245,9 +247,13 @@ function updateUIForPushPermissionRequired() {
 }
 
 function showError(error, data) {
+  if (!alert || !alert.length) {
+    console.error('UI not ready:', error, data);
+    return;
+  }
+
   alert.show();
   alert_message.html(
     data ? error + '<br><pre>' + JSON.stringify(data) + '</pre>' : error
   );
-  console.error(error, data || '');
 }
