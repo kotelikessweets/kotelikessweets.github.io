@@ -195,7 +195,7 @@ function sendNotification(notification) {
     .then(json => {
       massage_row.show();
       massage_id.text(
-        json.message? || 'Something went wrong'
+        json.message ? json.message : 'Something went wrong'
       );
     })
     .catch(showError);
