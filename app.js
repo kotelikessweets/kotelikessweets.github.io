@@ -1,19 +1,25 @@
+async function initApp() {
 // Firebase init v9
-const firebaseConfig = {
-  apiKey: "AIzaSyAyteudQPWB_RL-fwGY917Gi3SXIjWchNg",
-  authDomain: "svitlo-availability-app.firebaseapp.com",
-  projectId: "svitlo-availability-app",
-  storageBucket: "svitlo-availability-app.firebasestorage.app",
-  messagingSenderId: "993204375961",
-  appId: "1:993204375961:web:9ede561341138799a40308",
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyAyteudQPWB_RL-fwGY917Gi3SXIjWchNg",
+    authDomain: "svitlo-availability-app.firebaseapp.com",
+    projectId: "svitlo-availability-app",
+    storageBucket: "svitlo-availability-app.firebasestorage.app",
+    messagingSenderId: "993204375961",
+    appId: "1:993204375961:web:9ede561341138799a40308",
+  };
 
-firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 
-const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+  const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
 
-const messaging = firebase.messaging();
+  const messaging = firebase.messaging();
+
+}
+
+initApp();
+
 const VAPID_KEY = 'BCII_elwFU-0lcIIHbub_13Teuju9z4ZKCbPujJjyqSSP-Iqpjbul1XCo-V59e9YI_k-VXnp0bZe5-a21wevUtk';
 
 // UI bindings 
