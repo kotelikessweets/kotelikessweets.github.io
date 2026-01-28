@@ -1,3 +1,5 @@
+let messaging;
+
 async function initApp() {
 // Firebase init v9
   const firebaseConfig = {
@@ -14,7 +16,7 @@ async function initApp() {
   const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
 
-  const messaging = firebase.messaging();
+  messaging = firebase.messaging();
 
 }
 
