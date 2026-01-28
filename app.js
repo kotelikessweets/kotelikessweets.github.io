@@ -1,4 +1,9 @@
 let messaging;
+let bt_register, bt_delete, token, form, massage_row;
+let info, info_message, alert, alert_message;
+let input_body, timerId;
+
+const VAPID_KEY = 'BCII_elwFU-0lcIIHbub_13Teuju9z4ZKCbPujJjyqSSP-Iqpjbul1XCo-V59e9YI_k-VXnp0bZe5-a21wevUtk';
 
 async function initApp() {
 // Firebase init v9
@@ -18,49 +23,14 @@ async function initApp() {
 
   messaging = firebase.messaging();
 
+
+  setupMessaging();
+  setupUI();
 }
 
 initApp();
 
-const VAPID_KEY = 'BCII_elwFU-0lcIIHbub_13Teuju9z4ZKCbPujJjyqSSP-Iqpjbul1XCo-V59e9YI_k-VXnp0bZe5-a21wevUtk';
-
-// UI bindings 
-var bt_register = $('#register');
-var bt_delete = $('#delete');
-var token = $('#token');
-var form = $('#notification');
-var massage_id = $('#massage_id');
-var massage_row = $('#massage_row');
-
-var info = $('#info');
-var info_message = $('#info-message');
-
-var alert = $('#alert');
-var alert_message = $('#alert-message');
-
-var input_body = $('#body');
-var timerId = setInterval(setNotificationDemoBody, 10000);
-
-
-// Helpers 
-function setNotificationDemoBody() {
-  if (input_body.val().search(/^It's found today at \d\d:\d\d$/i) !== -1) {
-    var now = new Date();
-    input_body.val(
-      "It's found today at " + now.getHours() + ':' + addZero(now.getMinutes())
-    );
-  } else {
-    clearInterval(timerId);
-  }
-}
-
-function addZero(i) {
-  return i > 9 ? i : '0' + i;
-}
-
-setNotificationDemoBody();
-resetUI();
-
+function setupMessaging() {
 
 // Capability checks 
 if (
@@ -128,6 +98,50 @@ if (
   showError('This browser does not support push notifications');
   updateUIForPushPermissionRequired();
 }
+}
+
+
+function setupUI() {
+// UI bindings 
+bt_register = $('#register');
+bt_delete = $('#delete');
+token = $('#token');
+form = $('#notification');
+massage_id = $('#massage_id');
+massage_row = $('#massage_row');
+
+info = $('#info');
+info_message = $('#info-message');
+
+alert = $('#alert');
+alert_message = $('#alert-message');
+
+input_body = $('#body');
+timerId = setInterval(setNotificationDemoBody, 10000);
+
+setNotificationDemoBody();
+resetUI();
+
+}
+// Helpers 
+function setNotificationDemoBody() {
+  if (input_body.val().search(/^It's found today at \d\d:\d\d$/i) !== -1) {
+    var now = new Date();
+    input_body.val(
+      "It's found today at " + now.getHours() + ':' + addZero(now.getMinutes())
+    );
+  } else {
+    clearInterval(timerId);
+  }
+}
+
+function addZero(i) {
+  return i > 9 ? i : '0' + i;
+}
+}
+
+
+
 
 // Token handling 
 async function getToken() {
@@ -138,10 +152,13 @@ async function getToken() {
       return;
     }
 
-    const currentToken = await messaging.getToken({
-      vapidKey: VAPID_KEY
-    });
+    const registration = await navigator.serviceWorker.ready;
 
+    const currentToken = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+    
     if (currentToken) {
       sendTokenToServer(currentToken);
       updateUIForPushEnabled(currentToken);
@@ -173,19 +190,11 @@ function sendNotification(notification) {
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            pushDeviceInfo: {
-              appPackage: "com.webpush.testapp",
-              appVersion: "1.1.0 (1)",
-              providerUid: "PH5AckgzOkdAYjYmRmBWNEtGQ2ZOOEA7cC9+Pg==",
-              pnsPushAddresses: [{
-                pns: "fcm",
-                pnsPushAddress: currentToken
-              }],
-              deviceUid: Math.random().toString(36).slice(2),
-              platform: 1,
-              osName: "WEB",
-              canShowPushNotification: true
-            }
+            device_uuid: Math.random().toString(36).slice(2),
+            device_type: "WEB",
+            push_address: currentToken,
+            watched_queue: "4/1",
+            device_details: "NULL"
           })
         }
       );
@@ -194,7 +203,7 @@ function sendNotification(notification) {
     .then(json => {
       massage_row.show();
       massage_id.text(
-        json.deviceAddress?.deviceAddress || 'Something went wrong'
+        json.message? || 'Something went wrong'
       );
     })
     .catch(showError);
