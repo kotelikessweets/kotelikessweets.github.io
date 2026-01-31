@@ -18,6 +18,8 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationOptions = {
     body: payload.notification?.body,
     icon: payload.notification?.icon,
+    sound: 'default',
+    vibrate: [200, 100, 200],
     data: {
       click_action: payload.notification?.click_action || '/'
     }
