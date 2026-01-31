@@ -2,6 +2,7 @@ let messaging;
 let bt_register, bt_delete, token, form, massage_row;
 let info, info_message, alert, alert_message;
 let input_body, timerId;
+let queue_select;
 
 const VAPID_KEY = 'BCII_elwFU-0lcIIHbub_13Teuju9z4ZKCbPujJjyqSSP-Iqpjbul1XCo-V59e9YI_k-VXnp0bZe5-a21wevUtk';
 
@@ -112,6 +113,8 @@ form = $('#notification');
 massage_id = $('#massage_id');
 massage_row = $('#massage_row');
 
+queue_select = $('#queue_select');
+
 info = $('#info');
 info_message = $('#info-message');
 
@@ -120,6 +123,8 @@ alert_message = $('#alert-message');
 
 input_body = $('#body');
 timerId = setInterval(setNotificationDemoBody, 10000);
+
+$('select').material_select();
 
 setNotificationDemoBody();
 resetUI();
@@ -170,8 +175,16 @@ async function getToken() {
 
 // Send notification 
 function sendNotification(notification) {
-  console.log('Send notification', notification);
   massage_row.hide();
+
+  const selectedQueue = queue_select.val();
+
+  if (!selectedQueue) {
+    showError('Please select a queue');
+    return;
+  }
+
+  console.log('Register for queue:', selectedQueue);
 
   messaging.getToken({ vapidKey: VAPID_KEY })
     .then(function (currentToken) {
@@ -187,7 +200,7 @@ function sendNotification(notification) {
             device_uuid: Math.random().toString(36).slice(2),
             device_type: "WEB",
             push_address: currentToken,
-            watched_queue: "4/1",
+            watched_queue: selectedQueue,
             device_details: "NULL"
           })
         }
