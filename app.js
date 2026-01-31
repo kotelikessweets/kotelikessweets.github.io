@@ -173,6 +173,18 @@ async function getToken() {
   }
 }
 
+function getDeviceUUID() {
+  const key = 'device_uuid';
+
+  let uuid = localStorage.getItem(key);
+  if (!uuid) {
+    uuid = crypto.randomUUID();
+    localStorage.setItem(key, uuid);
+  }
+
+  return uuid;
+}
+
 // Send notification 
 function sendNotification(notification) {
   massage_row.hide();
@@ -189,7 +201,7 @@ function sendNotification(notification) {
   messaging.getToken({ vapidKey: VAPID_KEY })
     .then(function (currentToken) {
       return fetch(
-        'https://pushservertest.org/registerPushDevice',
+        'https://svitlo-notifications-backend.onrender.com/registerDevice',
         {
           method: 'POST',
           headers: {
@@ -197,7 +209,7 @@ function sendNotification(notification) {
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            device_uuid: Math.random().toString(36).slice(2),
+            device_uuid: getDeviceUUID(),
             device_type: "WEB",
             push_address: currentToken,
             watched_queue: selectedQueue,
