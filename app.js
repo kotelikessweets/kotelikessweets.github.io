@@ -212,7 +212,7 @@ function sendNotification(notification) {
             device_uuid: getDeviceUUID(),
             device_type: "WEB",
             push_address: currentToken,
-            watched_queue: "{\"" + selectedQueue + "\":1",
+            watched_queue: JSON.stringify({ [selectedQueue]: 1 }),
             device_details: "NULL"
           })
         }
