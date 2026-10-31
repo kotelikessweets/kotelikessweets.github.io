@@ -201,7 +201,7 @@ function sendNotification(notification) {
   messaging.getToken({ vapidKey: VAPID_KEY })
     .then(function (currentToken) {
       return fetch(
-        'https://svitlo-notifications-backend.onrender.com/registerDevice',
+        'https://ktor-svitlo-backend.onrender.com/registerDevice',
         {
           method: 'POST',
           headers: {
@@ -212,7 +212,7 @@ function sendNotification(notification) {
             device_uuid: getDeviceUUID(),
             device_type: "WEB",
             push_address: currentToken,
-            watched_queue: selectedQueue,
+            watched_queue: "{\"" + selectedQueue + "\":1",
             device_details: "NULL"
           })
         }
